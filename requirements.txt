@@ -1,0 +1,5 @@
+celery==5.4.0
+dash==2.18.2
+dash-ag-grid==31.3.0
+gunicorn==23.0.0
+redis==5.2.0
