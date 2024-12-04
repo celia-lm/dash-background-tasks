@@ -65,7 +65,7 @@ def mytask_wrapped(**kwargs):
 
 celery_app.conf.beat_schedule = {
     'Scheduled update': {
-        'task': 'tasks.add_new_value',
+        'task': 'add_new_value', # task name
         'schedule': 90.0,
     },
 }
