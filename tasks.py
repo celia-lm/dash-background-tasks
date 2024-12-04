@@ -57,15 +57,15 @@ def mytask_wrapped(**kwargs):
     return
 
 # this way of specifying the schedule will NOT work if we are using the same celery_app object for bg callbacks and celery tasks
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
+# @celery_app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
     # This command invokes a celery task at an interval of every 90 seconds (3min). You can change this.
     # since we are not passing arguments to mytask, it will run with the default values
-    sender.add_periodic_task(5, mytask_wrapped.s(), name="Scheduled update")
+    # sender.add_periodic_task(5, mytask_wrapped.s(), name="Scheduled update")
 
-# celery_app.conf.beat_schedule = {
-#     'Scheduled update': {
-#         'task': 'add_new_value', # task name
-#         'schedule': 90.0,
-#     },
-# }
+celery_app.conf.beat_schedule = {
+    'Scheduled update': {
+        'task': 'add_new_value', # task name
+        'schedule': 90.0,
+    },
+}

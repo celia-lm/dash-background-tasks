@@ -3,7 +3,6 @@ import datetime
 import dash
 from dash import Dash, Input, Output, State, html, dcc, callback, ctx
 # my tasks file
-import tasks
 from tasks import background_callback_manager, celery_app, mytask_unwrapped, retrieve_data_from_db
 
 app = Dash(__name__, background_callback_manager=background_callback_manager)
@@ -81,7 +80,7 @@ def update_data_bg(_, new_values_n, wait_seconds):
 )
 def update_data_celery(_, new_values_n, wait_seconds):
     start = datetime.datetime.now().strftime("%H:%M:%S")
-    task_id = celery_app.send_task('add_new_values',  kwargs = {"N":new_values_n, "sleep_time":wait_seconds})
+    task_id = celery_app.send_task('add_new_value',  kwargs = {"N":new_values_n, "sleep_time":wait_seconds})
     dash.set_props("app-status", {"children":f"Task has been sent to celery at {start} and it will take {wait_seconds} seconds."})
     return str(task_id)
 
