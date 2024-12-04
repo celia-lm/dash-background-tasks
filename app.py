@@ -8,34 +8,43 @@ from tasks import background_callback_manager, celery_app, mytask_unwrapped, ret
 app = Dash(__name__, background_callback_manager=background_callback_manager)
 server = app.server
 
+# this is just a shortcut for basic styling without ddk
+def control_item(component):
+    return html.Div(component + [html.Br()], style={"padding":"5px"})
+
 app.layout = html.Div(
     [   
-        html.H1("App status:"), html.Br(),
+        html.H3("App status:"), 
         # these two html.Span could be ddk.Notification
-        html.Span(id="app-status"), html.Br(),
+        html.Span(id="app-status", children="No updates have been triggered by the user yet"), html.Br(),
         html.Span(id="last-update"), html.Br(),
         dcc.Store(id="task-id-store"),
         ## inputs for celery task and bg callback
-        html.Br(),
-        html.Span("Please specify the number of new records you want to add to the dataframe:"),
-        dcc.Input(id="new_values_n", type="number", min=0, value=1),
-        html.Br(),
-        html.Span("Please specify how long (number of seconds) the task will take to complete:"),
-        dcc.Input(id="wait", type="number", min=0, value=10),  
+        html.H3("Please specify:"), 
+        control_item([
+            html.Span("The number of new records you want to add to the dataframe:"),
+            dcc.Input(id="new_values_n", type="number", min=0, value=1),
+        ]),
+        control_item([
+            html.Span("How long (number of seconds) the task will take to complete:"),
+            dcc.Input(id="wait", type="number", min=0, value=10), 
+        ]),
         ## buttons
-        html.Br(),
-        html.Span("Please choose how you want the task to be executed:"),
-        html.Button(id="button_bg_callback", children="Update DB with background callback"),
-        html.Button(id="button_celery", children="Update DB with regular callback + celery task"),
-        ## table and interval to update it without refreshing the page
-        html.Br(),
+        control_item([
+            html.Span("How you want the task to be executed:"), html.Br(),
+            html.Button(id="button_bg_callback", children="Update DB with background callback"),
+            html.Button(id="button_celery", children="Update DB with regular callback + celery task")
+        ]),
+        ## table and (invisible) interval to update it without refreshing the page
+        html.H3("Results:"),
         dcc.Interval(id="interval", interval=1*1000, disabled=True), # 1 second (1000 miliseconds)
         dag.AgGrid(
             id="table",
             rowData=[],
             columnDefs=[{"field":c} for c in ["creation_time", "col_numeric", "col_category"]]
         )
-    ]
+    ],
+    style={"padding":'10px'}
 )
 
 # this callback sends the task to a background queue (which is also celery) but it won't finish until the task has been COMPLETED
