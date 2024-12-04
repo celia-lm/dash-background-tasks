@@ -4,6 +4,7 @@ This app demoes how to **execute background tasks** in a Dash App in multiple wa
 3. As a **celery task inside a regular callback**
 
 These background tasks generate random data (based in user inputs) that is appended to the existing one in a Redis database and saved there. That data is then retrieved from a regular dash callback to populate a Dash Ag Grid:
+
 <img width="681" alt="Screenshot 2024-12-04 at 16 53 30" src="https://github.com/user-attachments/assets/1b1d330b-76c1-4b7c-922d-a90524b86e6a">
 
 This app has been designed to be deployed to **Dash Enterprise 5** and assumes that you have **linked a Redis database** to your app, whose url is available as the `REDIS_URL` environment variable.
