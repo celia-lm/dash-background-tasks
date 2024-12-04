@@ -46,19 +46,25 @@ def mytask_unwrapped(N=1, sleep_time=10):
     # in a real-case scenario you'd have a Postgres DB and would append new values instead of rewritting everything
     existing_values = retrieve_data_from_db()
     all_values = existing_values + new_values
-    print(all_values)
     redis_store.hset("app-data", "DATASET", json.dumps(all_values))
 
     return new_values
 
 # we call the raw mytask_unwrapped function inside a celery task so that it's sent to the queue
-@celery_app.task(name='add_new_values')
+@celery_app.task(name="add_new_value")
 def mytask_wrapped(**kwargs):
     mytask_unwrapped(**kwargs)
     return
 
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # This command invokes a celery task at an interval of every 90 seconds (3min). You can change this.
-    # since we are not passing arguments to mytask, it will run with the default values
-    sender.add_periodic_task(90, mytask_wrapped.s(), name="Scheduled update")
+# @celery_app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
+#     # This command invokes a celery task at an interval of every 90 seconds (3min). You can change this.
+#     # since we are not passing arguments to mytask, it will run with the default values
+#     sender.add_periodic_task(5, mytask_wrapped.s(), name="Scheduled update")
+
+celery_app.conf.beat_schedule = {
+    'Scheduled update': {
+        'task': 'tasks.mytask_wrapped',
+        'schedule': 90.0,
+    },
+}
