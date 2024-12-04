@@ -3,6 +3,7 @@ import datetime
 import dash
 from dash import Dash, Input, Output, State, html, dcc, callback, ctx
 # my tasks file
+import tasks
 from tasks import background_callback_manager, celery_app, mytask_unwrapped, retrieve_data_from_db
 
 app = Dash(__name__, background_callback_manager=background_callback_manager)
